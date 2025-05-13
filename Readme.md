@@ -14,3 +14,6 @@ Wanted to score it based on how long it survived (the pole remained upright)
   - encourage it to survive longer by giving it smaller rewards closer by
 - One point for each minute
 
+Initially I was using the preset rewards, but the goal was not being met.
+I figured the goal just being "play the game" isn't really a good incentive 
+to do so. 
