@@ -1,9 +1,6 @@
-import gymnasium as gym
 import math
-import numpy as np # Not directly used in this class, but often imported in RL contexts
-import stable_baselines3.common.vec_env # Not directly used in this class
-from typing import Tuple, Any, Dict # For more precise type hinting (Python 3.9+)
-
+from typing import Tuple, Any, Dict  # For more precise type hinting (Python 3.9+)
+import gymnasium as gym
 class IntervalSurvivalRewardWrapper(gym.Wrapper):
     """
     A Gymnasium Wrapper that modifies the reward structure of a wrapped environment.
@@ -96,11 +93,13 @@ class IntervalSurvivalRewardWrapper(gym.Wrapper):
             self.num_intervals_rewarded_this_episode = total_intervals_achieved_so_far
 
             # Add useful diagnostic info for logging or debugging
-            if 'custom_reward_info' not in info: # Initialize if not present
+            if 'custom_reward_info' not in info:  # Initialize if not present
                 info['custom_reward_info'] = {}
             info['custom_reward_info']['intervals_newly_rewarded_count'] = newly_achieved_intervals
-            info['custom_reward_info']['total_intervals_rewarded_this_episode'] = self.num_intervals_rewarded_this_episode
-            info['custom_reward_info']['reward_for_intervals_this_step'] = current_step_interval_reward # The part from intervals only
+            info['custom_reward_info'][
+                'total_intervals_rewarded_this_episode'] = self.num_intervals_rewarded_this_episode
+            info['custom_reward_info'][
+                'reward_for_intervals_this_step'] = current_step_interval_reward  # The part from intervals only
             info['custom_reward_info']['current_episode_sim_time_sec'] = round(self.episode_sim_time_elapsed, 2)
 
         # Final reward includes the interval reward (if any) plus a small constant bonus for every step
