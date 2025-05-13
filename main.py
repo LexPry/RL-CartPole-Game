@@ -8,7 +8,7 @@ from Wrappers.IntervalSurvivalRewardWrapper import IntervalSurvivalRewardWrapper
 from utils import Utils
 
 
-def setup_environment(env_name_registered, max_steps=6000,
+def setup_environment(env_name_registered, max_steps=6000, # ~120 secs
                       render_mode="rgb_array"):
     try:
         gym.register(id=env_name_registered, entry_point="gymnasium.envs.classic_control:CartPoleEnv",
@@ -24,13 +24,13 @@ def setup_environment(env_name_registered, max_steps=6000,
 
 
 def train_agent(env, utils, ent_coef_val, gamma_val, total_timesteps_val):
-    log_dir = os.path.join(utils.get_log_dir_path(), "PPO")
+    log_dir = utils.get_log_dir_path()
     model_save_path = utils.get_model_save_path()
     existing_model_path = utils.get_latest_model_load_path()
 
-    model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=log_dir + "/", ent_coef=ent_coef_val, gamma=gamma_val)
+    model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=log_dir, ent_coef=ent_coef_val, gamma=gamma_val)
 
-    if os.path.isfile(existing_model_path):
+    if utils.get_latest_model_load_path() is not None:
         print(f"Loading model from: {existing_model_path}")
         model.set_parameters(existing_model_path)
         print("Model parameters loaded successfully.")
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     ENT_COEF = 0.01
     GAMMA = 0.99
     TOTAL_TIMESTEPS = 50_000
-    REGISTERED_ENV_NAME = 'CartPole-v1-LongerIntervals'  # Use a more descriptive name
+    REGISTERED_ENV_NAME = 'CartPole-v1-LongerIntervals'
     BASE_ENV_ID = 'CartPole-v1'  # The actual base env ID for gym.make
     MAX_EPISODE_STEPS = 6000
     NUM_EVAL_EPISODES = 3
@@ -77,8 +77,6 @@ if __name__ == "__main__":
     utils = Utils()
 
     # --- Setup Environment ---
-    # Pass BASE_ENV_ID to gym.make and REGISTERED_ENV_NAME to gym.register
-    # The environment_name in your original code for gym.make should be the base ID.
     env = setup_environment(REGISTERED_ENV_NAME, max_steps=MAX_EPISODE_STEPS)
 
     # --- Train Agent ---

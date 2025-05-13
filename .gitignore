@@ -1,7 +1,7 @@
 # .gitignore
 Training/Logs/*
+Model/*.zip
 *.pkl # If you save VecNormalize stats, etc.
-Model/ # Often, unless models are very small or for specific releases
 __pycache__/
 *.pyc
 .DS_Store
