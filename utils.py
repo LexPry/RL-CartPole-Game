@@ -1,7 +1,6 @@
-import os
-from pathlib import Path
 import datetime
-from typing import Union, Optional
+from pathlib import Path
+from typing import Optional
 
 
 class Utils:

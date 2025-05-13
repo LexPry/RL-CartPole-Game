@@ -1,6 +1,9 @@
 import math
 from typing import Tuple, Any, Dict  # For more precise type hinting (Python 3.9+)
+
 import gymnasium as gym
+
+
 class IntervalSurvivalRewardWrapper(gym.Wrapper):
     """
     A Gymnasium Wrapper that modifies the reward structure of a wrapped environment.
