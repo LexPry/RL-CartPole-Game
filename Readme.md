@@ -42,7 +42,7 @@ This project demonstrates an iterative approach to solving RL problems.
 
 1.  **Clone the repository:**
     ```bash
-    git clone <your-repository-url>
+    git clone https://github.com/LexPry/RL-CartPole-Game.git
     cd <your-project-directory>
     ```
 
