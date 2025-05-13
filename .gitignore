@@ -1,0 +1,10 @@
+# .gitignore
+Training/Logs/*
+*.pkl # If you save VecNormalize stats, etc.
+Model/ # Often, unless models are very small or for specific releases
+__pycache__/
+*.pyc
+.DS_Store
+# Add your virtual environment folder if you use one locally
+venv/
+.env

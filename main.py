@@ -4,21 +4,19 @@ import gymnasium as gym
 from stable_baselines3 import PPO
 from tqdm import tqdm
 
-from IntervalSurvivalRewardWrapper import IntervalSurvivalRewardWrapper
+from Wrappers.IntervalSurvivalRewardWrapper import IntervalSurvivalRewardWrapper
 from utils import Utils
 
 
 def setup_environment(env_name_registered, max_steps=6000,
-                      render_mode="rgb_array"):  # Removed base_env_name as it's not needed if we use env_name_registered
+                      render_mode="rgb_array"):
     try:
-        gym.register(id=env_name_registered,
-                     entry_point="gymnasium.envs.classic_control:CartPoleEnv",
+        gym.register(id=env_name_registered, entry_point="gymnasium.envs.classic_control:CartPoleEnv",
                      max_episode_steps=max_steps)
         print(f"Environment {env_name_registered} registered with max_episode_steps={max_steps}.")
-    except gym.error.Error as e:  # More specific error type might be gym.error.Error or similar
+    except gym.error.Error as e:
         print(f"Environment {env_name_registered} might already be registered: {e}")
 
-    # Use the registered environment ID here to get the one with your custom max_steps
     base_env = gym.make(env_name_registered, render_mode=render_mode)
     print(f"Created environment '{env_name_registered}' with spec: {base_env.spec}")  # Check the spec
     env = IntervalSurvivalRewardWrapper(base_env)
@@ -26,28 +24,23 @@ def setup_environment(env_name_registered, max_steps=6000,
 
 
 def train_agent(env, utils, ent_coef_val, gamma_val, total_timesteps_val):
-    log_dir = os.path.join(utils.get_log_dir(), "PPO")
-    model_save_path = utils.get_save_path()
-    existing_model_path = utils.get_saved_model()
+    log_dir = os.path.join(utils.get_log_dir_path(), "PPO")
+    model_save_path = utils.get_model_save_path()
+    existing_model_path = utils.get_latest_model_load_path()
 
-    model = PPO("MlpPolicy", env, verbose=1,
-                tensorboard_log=log_dir + "/",
-                ent_coef=ent_coef_val,
-                gamma=gamma_val)
+    model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=log_dir + "/", ent_coef=ent_coef_val, gamma=gamma_val)
 
     if os.path.isfile(existing_model_path):
         print(f"Loading model from: {existing_model_path}")
         model.set_parameters(existing_model_path)
         print("Model parameters loaded successfully.")
-        # These re-assignments are only necessary if you want to ensure these values for the *next* learning phase
-        # and they were different from the initial PPO() call.
         model.ent_coef = ent_coef_val
         model.gamma = gamma_val
     else:
         print("No existing model found. Training from scratch.")
 
     print(f"Starting training for {total_timesteps_val} timesteps...")
-    model.learn(total_timesteps=total_timesteps_val, progress_bar=True)
+    model.learn(total_timesteps=total_timesteps_val, progress_bar=False)
     print("Training complete.")
     model.save(model_save_path)
     print(f"Model saved to: {model_save_path}")
@@ -64,7 +57,7 @@ def evaluate_agent(model, num_episodes=5, num_steps_per_episode=7000):
             obs, rewards, done, info = vec_env.step(action)
             vec_env.render("human")
             if done:
-                print(f"Episode {i + 1} complete, finished after {_ + 1} steps.")
+                print(f"\nEpisode {i + 1} complete, finished after {_ + 1} steps.")
                 break
     print("Evaluation complete.")
 
@@ -73,7 +66,7 @@ if __name__ == "__main__":
     # --- Configuration ---
     ENT_COEF = 0.01
     GAMMA = 0.99
-    TOTAL_TIMESTEPS = 500_000
+    TOTAL_TIMESTEPS = 50_000
     REGISTERED_ENV_NAME = 'CartPole-v1-LongerIntervals'  # Use a more descriptive name
     BASE_ENV_ID = 'CartPole-v1'  # The actual base env ID for gym.make
     MAX_EPISODE_STEPS = 6000
